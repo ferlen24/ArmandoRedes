@@ -1,0 +1,628 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NET TOPOLOGY ARCADE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="net_topology_arcade.css" />
+</head>
+<body>
+<div id="game">
+  <div id="toast">POWER UP</div>
+
+  <section class="screen active" id="welcome">
+    <div class="hero">
+      <div class="hero-icon">📡</div>
+      <p class="insert">◈ NEURAL LINK ESTABLISHED ◈</p>
+      <h1>NET TOPOLOGY<br>ARCADE</h1>
+      <p class="lead">Armá redes con <strong>PCs</strong>, <strong>nodos</strong> y <strong>cables</strong>. En otros niveles elegí la topología (<em>bus, anillo, estrella</em>), el modelo (<em>cliente-servidor, P2P…</em>) o el alcance (<em>LAN, MAN, WAN</em>) según el caso.</p>
+      <div class="name-form">
+        <label for="player">NOMBRE DEL ALUMNO</label>
+        <input id="player" maxlength="40" placeholder="Ej: Juan" autocomplete="name" />
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="startGame()">Jugar</button>
+        <button class="btn btn-secondary" onclick="showScreen('manual')">Manual</button>
+      </div>
+      <p class="brand">Infraestructura Tecnológica — Diplomatura en Auditoría de Sistemas de Información y Gestión de Ciberseguridad</p>
+    </div>
+  </section>
+
+  <section class="screen" id="manual">
+    <div class="header">
+      <h2>Manual de redes</h2>
+      <button class="btn btn-secondary btn-small" onclick="showScreen('welcome')">← Volver</button>
+    </div>
+    <div class="manual-section">
+      <h3 class="section-title">Cómo armar la red en cada misión</h3>
+      <table class="manual-table">
+        <tr><th>Elemento</th><th>Uso</th></tr>
+        <tr><td>💻 PC · 🖥️ Servidor · 🎛️ Manager</td><td><small>Clic en el lienzo para colocar equipos.</small></td></tr>
+        <tr><td>🔀 Switch · 🚌 Bus</td><td><small>Nodos de red que concentran o comparten el medio.</small></td></tr>
+        <tr><td>📡 Router · ☁️ Internet</td><td><small>WAN: routers unen sedes a la nube. MAN: solo switches en la ciudad.</small></td></tr>
+        <tr><td>🔌 Cable</td><td><small>Clic en dos dispositivos para unirlos.</small></td></tr>
+        <tr><td>Verificar red</td><td><small>Valida si la topología cumple el objetivo.</small></td></tr>
+        <tr><td>Misiones ELEGIR</td><td><small>Analizá el caso y elegí bus, anillo, estrella, cliente-servidor, LAN, WAN, etc.</small></td></tr>
+      </table>
+    </div>
+    <div class="manual-section">
+      <h3 class="section-title">1. Topología física: forma de conexión</h3>
+      <table class="manual-table">
+        <tr><th>Modelo</th><th>Idea clave</th><th>Ejemplo didáctico</th></tr>
+        <tr><td>Bus</td><td>Un único canal común compartido.</td><td><small>Como una avenida principal donde todos transmiten por el mismo camino.</small></td></tr>
+        <tr><td>Anillo</td><td>Los dispositivos forman un circuito cerrado.</td><td><small>El dato pasa de nodo en nodo hasta llegar al destino.</small></td></tr>
+        <tr><td>Estrella</td><td>Todos se conectan a un nodo central.</td><td><small>Una red de oficina con PCs conectadas a un switch.</small></td></tr>
+        <tr><td>Punto a Punto</td><td>Enlace directo entre dos dispositivos.</td><td><small>Dos routers unidos por un enlace dedicado.</small></td></tr>
+      </table>
+    </div>
+    <div class="manual-section">
+      <h3 class="section-title">2. Relación funcional</h3>
+      <table class="manual-table">
+        <tr><th>Modelo</th><th>Idea clave</th><th>Ejemplo</th></tr>
+        <tr><td>Cliente-Servidor</td><td>Existe jerarquía: un cliente pide y un servidor responde.</td><td><small>Navegador → servidor web.</small></td></tr>
+        <tr><td>Peer to Peer</td><td>Los equipos se comunican entre pares.</td><td><small>PC ↔ PC compartiendo recursos.</small></td></tr>
+        <tr><td>Manager-Agent</td><td>Un equipo administra o monitorea agentes remotos.</td><td><small>Servidor de monitoreo → cámaras, switches o PCs.</small></td></tr>
+      </table>
+    </div>
+    <div class="manual-section">
+      <h3 class="section-title">3. Localización geográfica</h3>
+      <table class="manual-table">
+        <tr><th>Tipo</th><th>Alcance</th><th>Ejemplo</th></tr>
+        <tr><td>LAN</td><td>Área local.</td><td><small>Hogar, aula, oficina o edificio.</small></td></tr>
+        <tr><td>MAN</td><td>Área metropolitana.</td><td><small>Red que conecta sedes dentro de una ciudad.</small></td></tr>
+        <tr><td>WAN</td><td>Área amplia.</td><td><small>Red entre provincias, países o continentes.</small></td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section class="screen" id="hub">
+    <div class="header">
+      <h2 id="hub-title">NET HQ</h2>
+      <div class="hud">
+        <span class="pill score" id="score">SCORE 0</span>
+        <span class="pill stage" id="stage">STAGE 0/9</span>
+        <span class="pill time" id="timer">00:00</span>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('missions')">Misiones</button>
+      <button class="tab" onclick="switchTab('map')">Mapa Visual</button>
+      <button class="tab" onclick="switchTab('concepts')">Conceptos</button>
+    </div>
+    <div id="tab-missions"></div>
+    <div id="tab-map" hidden></div>
+    <div id="tab-concepts" hidden></div>
+  </section>
+
+  <section class="screen" id="puzzle">
+    <div class="header">
+      <h2 id="puzzle-title">Misión</h2>
+      <button class="btn btn-secondary btn-small" onclick="backToHub()">← Hub</button>
+    </div>
+    <div class="puzzle" id="puzzle-body"></div>
+  </section>
+
+  <section class="screen" id="victory">
+    <div class="victory" id="victory-content"></div>
+  </section>
+</div>
+
+<canvas id="cert" width="1100" height="800" hidden></canvas>
+
+<script>
+const BRAND = 'Infraestructura Tecnológica — Diplomatura en Auditoría de Sistemas de Información y Gestión de Ciberseguridad';
+const SCORE_PENALTY = 30;
+
+function applyPenalty(){
+ state.score=Math.max(0,state.score-SCORE_PENALTY);
+ updateHUD();
+ toast('-'+SCORE_PENALTY+' puntos');
+}
+const CONCEPTS = [
+  {id:'bus', group:'Topología Física', name:'Bus', icon:'🚌', short:'Único canal común', desc:'Todos los equipos comparten un mismo medio de comunicación.'},
+  {id:'ring', group:'Topología Física', name:'Anillo', icon:'⭕', short:'Circuito cerrado', desc:'Cada nodo se conecta con dos vecinos formando un círculo.'},
+  {id:'star', group:'Topología Física', name:'Estrella', icon:'⭐', short:'Nodo central común', desc:'Todos los dispositivos dependen de un nodo central, normalmente un switch.'},
+  {id:'ptp', group:'Topología Física', name:'Punto a Punto', icon:'↔️', short:'Enlace directo', desc:'Dos dispositivos se conectan directamente entre sí.'},
+  {id:'cs', group:'Relación Funcional', name:'Cliente-Servidor', icon:'🖥️', short:'Jerarquía', desc:'El cliente solicita un servicio y el servidor lo entrega.'},
+  {id:'p2p', group:'Relación Funcional', name:'Peer to Peer', icon:'🤝', short:'Entre pares', desc:'Los equipos pueden actuar como clientes y servidores entre sí.'},
+  {id:'ma', group:'Relación Funcional', name:'Manager-Agent', icon:'🎛️', short:'Control remoto', desc:'Un manager monitorea o administra varios agentes.'},
+  {id:'lan', group:'Localización Geográfica', name:'LAN', icon:'🏠', short:'Área local', desc:'Red de alcance reducido: casa, aula, oficina o edificio.'},
+  {id:'man', group:'Localización Geográfica', name:'MAN', icon:'🏙️', short:'Área metropolitana', desc:'Red que conecta sectores o sedes dentro de una ciudad.'},
+  {id:'wan', group:'Localización Geográfica', name:'WAN', icon:'🌎', short:'Área amplia', desc:'Red que conecta grandes distancias: país, continente o mundo.'}
+];
+
+const NODE_META = {
+  pc:{icon:'💻',label:'PC',placeable:true},
+  switch:{icon:'🔀',label:'Switch',placeable:true},
+  bus:{icon:'🚌',label:'Bus',placeable:true,busBar:true},
+  server:{icon:'🖥️',label:'Servidor',placeable:true},
+  manager:{icon:'🎛️',label:'Manager',placeable:true},
+  router:{icon:'📡',label:'Router',placeable:true},
+  cloud:{icon:'☁️',label:'Internet',placeable:true,cloudShape:true}
+};
+
+const MISSIONS = [
+  {id:'m1', type:'build', topology:'bus', title:'Armar red Bus', icon:'🚌', xp:100, group:'Topología Física',
+   scenario:'Varias computadoras comparten el mismo cable principal. Si el bus falla, toda la red se cae.',
+   goal:'Colocá 1 canal Bus y conectá al menos 3 PCs con cable de red.',
+   palette:['bus','pc','cable'],
+   exp:'Topología Bus: un único medio compartido al que se enganchan todas las PCs.'},
+  {id:'m2', type:'build', topology:'ring', title:'Armar red Anillo', icon:'⭕', xp:100, group:'Topología Física',
+   scenario:'Cada PC se conecta con la siguiente y la última vuelve a la primera, formando un circuito cerrado.',
+   goal:'Colocá al menos 3 PCs y unílas con cables formando un anillo completo.',
+   palette:['pc','cable'],
+   exp:'Topología Anillo: cada nodo tiene dos vecinos y el camino cierra el círculo.'},
+  {id:'m2b', type:'choose', chooseKind:'physical', title:'Elegir topología: Planta industrial', icon:'🔍', xp:90, group:'Análisis de caso',
+   scenario:'En una fábrica automatizada, cada estación se enlaza solo con la siguiente y la última devuelve el token al primer equipo, formando un circuito cerrado.',
+   question:'¿Qué topología física corresponde?',
+   opts:['Bus','Anillo','Estrella','Cliente-Servidor'], ans:1,
+   exp:'Es Anillo: los nodos forman un circuito cerrado pasando datos de vecino en vecino.'},
+  {id:'m3', type:'build', topology:'star', title:'Armar red Estrella', icon:'⭐', xp:100, group:'Topología Física',
+   scenario:'En una oficina, todas las PCs van a un switch central. Si una PC falla, las demás siguen.',
+   goal:'Colocá 1 Switch y al menos 3 PCs; cada PC debe conectarse solo al switch.',
+   palette:['switch','pc','cable'],
+   exp:'Topología Estrella: todas las estaciones dependen de un nodo central.'},
+  {id:'m4', type:'build', topology:'ptp', title:'Enlace Punto a Punto', icon:'↔️', xp:100, group:'Topología Física',
+   scenario:'Dos equipos de edificios vecinos se unen con un enlace directo de fibra.',
+   goal:'Colocá exactamente 2 dispositivos (PC o Switch) y un solo cable entre ellos.',
+   palette:['pc','switch','cable'],
+   exp:'Punto a Punto: enlace dedicado entre dos dispositivos, sin nodos intermedios.'},
+  {id:'m4b', type:'choose', chooseKind:'physical', title:'Elegir topología: Oficina', icon:'🔍', xp:90, group:'Análisis de caso',
+   scenario:'Una empresa nueva instala 20 PCs en planta abierta. Todas deben conectarse a un switch central en el rack; si falla una PC, las demás siguen operando.',
+   question:'¿Qué topología física es la más adecuada?',
+   opts:['Anillo','Bus','Estrella','Punto a Punto'], ans:2,
+   exp:'Es Estrella: todas las estaciones se conectan a un nodo central (switch).'},
+  {id:'m4c', type:'choose', chooseKind:'physical', title:'Elegir topología: Laboratorio', icon:'🔍', xp:90, group:'Análisis de caso',
+   scenario:'En un laboratorio heredado, todas las workstations cuelgan de un único cable troncal coaxial. Si ese troncal se daña, nadie puede transmitir.',
+   question:'¿Qué topología física describe este escenario?',
+   opts:['Anillo','Bus','Estrella','Cliente-Servidor'], ans:1,
+   exp:'Es Bus: un solo medio compartido; su falla afecta a toda la red.'},
+  {id:'m5', type:'build', topology:'cs', title:'Red Cliente-Servidor', icon:'🖥️', xp:120, group:'Relación Funcional',
+   scenario:'Un alumno pide una página web: el cliente solicita y el servidor responde.',
+   goal:'Colocá 1 Servidor, al menos 1 PC cliente y conectalos con cable (directo o vía switch).',
+   palette:['server','pc','switch','cable'],
+   exp:'Cliente-Servidor: hay jerarquía; el cliente pide recursos al servidor.'},
+  {id:'m5b', type:'choose', chooseKind:'functional', title:'Elegir modelo: Correo corporativo', icon:'🔍', xp:100, group:'Análisis de caso',
+   scenario:'Los empleados abren Outlook en sus PCs. El cliente solicita correo y un servidor Exchange central entrega los mensajes. Hay jerarquía clara entre quien pide y quien responde.',
+   question:'¿Qué relación funcional corresponde?',
+   opts:['Peer to Peer','Cliente-Servidor','Manager-Agent','Bus'], ans:1,
+   exp:'Cliente-Servidor: el cliente solicita un servicio y el servidor lo provee.'},
+  {id:'m5c', type:'choose', chooseKind:'functional', title:'Elegir modelo: Transferencia directa', icon:'🔍', xp:100, group:'Análisis de caso',
+   scenario:'Dos compañeros en la misma aula comparten una carpeta de proyecto sin pasar por un servidor intermedio. Ambos equipos envían y reciben por igual.',
+   question:'¿Qué modelo funcional es el correcto?',
+   opts:['Cliente-Servidor','Peer to Peer','Manager-Agent','WAN'], ans:1,
+   exp:'Peer to Peer: los equipos actúan como pares sin servidor central.'},
+  {id:'m6', type:'build', topology:'p2p', title:'Red Peer to Peer', icon:'🤝', xp:120, group:'Relación Funcional',
+   scenario:'Dos notebooks intercambian archivos directamente, sin servidor central.',
+   goal:'Colocá 2 PCs conectadas solo entre sí, sin switch ni servidor.',
+   palette:['pc','cable'],
+   exp:'Peer to Peer: los equipos actúan como pares sin jerarquía central.'},
+  {id:'m7', type:'build', topology:'ma', title:'Red Manager-Agent', icon:'🎛️', xp:120, group:'Relación Funcional',
+   scenario:'Un servidor de monitoreo consulta cámaras, switches y PCs agentes.',
+   goal:'Colocá 1 Manager y al menos 2 PCs; cada PC debe estar cableada al Manager.',
+   palette:['manager','pc','cable'],
+   exp:'Manager-Agent: un equipo central administra o monitorea varios agentes.'},
+  {id:'m7b', type:'choose', chooseKind:'functional', title:'Elegir modelo: Monitoreo NOC', icon:'🔍', xp:100, group:'Análisis de caso',
+   scenario:'Un centro de operaciones (NOC) revisa en tiempo real el estado de routers, cámaras y servidores. Cada dispositivo reporta métricas al sistema central de supervisión.',
+   question:'¿Qué relación funcional describe este escenario?',
+   opts:['Peer to Peer','Cliente-Servidor','Manager-Agent','Bus'], ans:2,
+   exp:'Manager-Agent: un manager central supervisa o administra múltiples agentes.'},
+  {id:'m8', type:'build', topology:'lan', title:'Armar una LAN', icon:'🏠', xp:150, group:'Localización Geográfica',
+   scenario:'Red de un edificio: PCs e impresoras conectadas localmente en el aula u oficina.',
+   goal:'Armá una LAN: 1 Switch central con al menos 3 PCs conectadas.',
+   palette:['switch','pc','cable'],
+   exp:'LAN: red de área local dentro de un edificio, aula u oficina.'},
+  {id:'m8b', type:'choose', chooseKind:'geo', title:'Elegir alcance: Aula universitaria', icon:'🔍', xp:110, group:'Análisis de caso',
+   scenario:'Una facultad conecta PCs, proyectores y un servidor de archivos dentro del mismo pabellón de 4 pisos. Todo queda dentro del campus en un solo edificio.',
+   question:'¿Qué tipo de red geográfica es?',
+   opts:['LAN','MAN','WAN','Anillo'], ans:0,
+   exp:'LAN: red de área local limitada a un edificio o campus pequeño.'},
+  {id:'m8c', type:'choose', chooseKind:'geo', title:'Elegir alcance: Multinacional', icon:'🔍', xp:110, group:'Análisis de caso',
+   scenario:'Una multinacional une sus datacenters en Buenos Aires, Madrid y Tokio mediante enlaces de alta capacidad a través de operadores internacionales.',
+   question:'¿Qué tipo de red geográfica utiliza?',
+   opts:['LAN','MAN','WAN','Bus'], ans:2,
+   exp:'WAN: conecta sedes en grandes distancias (países o continentes).'},
+  {id:'m8d', type:'choose', chooseKind:'geo', title:'Elegir alcance: Ciudad', icon:'🔍', xp:110, group:'Análisis de caso',
+   scenario:'Un banco conecta cinco sucursales repartidas en la misma ciudad con fibra óptica metropolitana entre sus switches de borde.',
+   question:'¿Qué tipo de red geográfica corresponde?',
+   opts:['LAN','MAN','WAN','Estrella'], ans:1,
+   exp:'MAN: red metropolitana que cubre una ciudad o área urbana.'},
+  {id:'m9', type:'build', topology:'man', title:'Armar una MAN', icon:'🏙️', xp:150, group:'Localización Geográfica',
+   scenario:'Tres sucursales en la misma ciudad se unen con fibra óptica metropolitana. Es red local de ciudad: sin Internet ni routers.',
+   goal:'Colocá 3 Switches + 1 PC por sede. Cableá los switches entre sí (fibra metropolitana). No uses Router ni Nube.',
+   palette:['switch','pc','cable'],
+   exp:'MAN: red metropolitana — sedes de una ciudad unidas por fibra entre switches, sin salir a Internet.'},
+  {id:'m9b', type:'build', topology:'wan', title:'Armar una WAN', icon:'🌎', xp:150, group:'Localización Geográfica',
+   scenario:'Sedes en distintos países se conectan a través de routers y la red Internet (nube).',
+   goal:'Colocá 1 Nube Internet, 3 Routers y 3 Switches con PC. En cada sede: PC→Switch→Router. Cableá los routers a la nube.',
+   palette:['cloud','router','switch','pc','cable'],
+   exp:'WAN: sedes lejanas se enlazan por routers que comparten la red Internet (área amplia / internacional).'},
+  {id:'m10', type:'match', title:'Reto final: Clasificar conceptos', icon:'🧩', xp:250, group:'Final',
+   exp:'Clasificaste correctamente las arquitecturas de red por forma física, relación funcional y localización geográfica.'}
+];
+
+let state = {name:'', score:0, done:[], start:null, end:null, activeTab:'missions'};
+let currentMission = null;
+let timerInt = null;
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show-toast');setTimeout(()=>t.classList.remove('show-toast'),1800)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function fmt(ms){let total=Math.floor(ms/1000),m=Math.floor(total/60),s=total%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function elapsed(){return state.start ? (state.end||Date.now())-state.start : 0}
+function updateHUD(){document.getElementById('score').textContent='SCORE '+state.score;document.getElementById('stage').textContent='STAGE '+state.done.length+'/'+MISSIONS.length;document.getElementById('timer').textContent=fmt(elapsed());document.getElementById('hub-title').textContent=state.name ? state.name.toUpperCase() : 'NET HQ'}
+function startTimer(){clearInterval(timerInt);timerInt=setInterval(()=>{if(document.getElementById('hub').classList.contains('active')||document.getElementById('puzzle').classList.contains('active'))updateHUD()},1000)}
+function startGame(){const n=document.getElementById('player').value.trim();if(!n){toast('Ingresá tu nombre');document.getElementById('player').focus();return}state={name:n,score:0,done:[],start:Date.now(),end:null,activeTab:'missions'};showScreen('hub');renderAll();startTimer()}
+function backToHub(){showScreen('hub');renderAll();switchTab(state.activeTab)}
+function switchTab(tab){state.activeTab=tab;['missions','map','concepts'].forEach(t=>{document.getElementById('tab-'+t).hidden=t!==tab});document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['missions','map','concepts'][i]===tab));if(tab==='missions')renderMissions();if(tab==='map')renderMap();if(tab==='concepts')renderConcepts();updateHUD()}
+function renderAll(){updateHUD();renderMissions();renderMap();renderConcepts()}
+
+function renderMissions(){
+ let html='<div class="grid">';
+ MISSIONS.forEach((m)=>{const done=state.done.includes(m.id);const mode=m.type==='build'?'ARMAR':m.type==='choose'?'ELEGIR':'RETO';const modeCls=m.type==='build'?'cyan':m.type==='choose'?'violet':'yellow';html+=`<div class="card ${done?'done':''}" onclick="startMission('${m.id}')">
+   <div class="card-icon">${m.icon}</div><div class="card-title">${esc(m.title)}</div><p>${esc(m.group)}</p>
+   <span class="badge ${modeCls}">${mode}</span>
+   <span class="badge ${done?'green':'cyan'}">${done?'CLEAR':'PLAY'}</span>
+   <span class="badge yellow">+${m.xp} XP</span></div>`});
+ html+='</div>';document.getElementById('tab-missions').innerHTML=html;
+}
+
+function renderConcepts(){
+ const groups=[...new Set(CONCEPTS.map(c=>c.group))];let html='';
+ groups.forEach(g=>{html+=`<h3 class="section-title">${esc(g)}</h3><div class="grid">`;CONCEPTS.filter(c=>c.group===g).forEach(c=>{html+=`<div class="card"><div class="card-icon">${c.icon}</div><div class="card-title">${esc(c.name)}</div><p><strong>${esc(c.short)}.</strong> ${esc(c.desc)}</p></div>`});html+='</div>'});
+ document.getElementById('tab-concepts').innerHTML=html;
+}
+
+function renderMap(){
+ document.getElementById('tab-map').innerHTML=`<div class="map-wrap"><svg class="map" viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa visual de topologías de red">
+ <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#00f5ff" stroke-width="1.8"/></marker></defs>
+ <text x="40" y="35" class="map-label" fill="#ffe600">Topología Física</text>
+ <line x1="60" y1="90" x2="260" y2="90" class="line"/><circle cx="80" cy="90" r="19" fill="#121225" stroke="#00f5ff" stroke-width="3"/><circle cx="160" cy="90" r="19" fill="#121225" stroke="#00f5ff" stroke-width="3"/><circle cx="240" cy="90" r="19" fill="#121225" stroke="#00f5ff" stroke-width="3"/><text x="135" y="135" class="map-small">BUS: canal común</text>
+ <circle cx="165" cy="230" r="70" fill="none" stroke="#ff00aa" stroke-width="4"/><circle cx="165" cy="160" r="17" fill="#121225" stroke="#ff00aa" stroke-width="3"/><circle cx="235" cy="230" r="17" fill="#121225" stroke="#ff00aa" stroke-width="3"/><circle cx="165" cy="300" r="17" fill="#121225" stroke="#ff00aa" stroke-width="3"/><circle cx="95" cy="230" r="17" fill="#121225" stroke="#ff00aa" stroke-width="3"/><text x="104" y="330" class="map-small">ANILLO: circuito cerrado</text>
+ <circle cx="420" cy="225" r="25" fill="#121225" stroke="#39ff14" stroke-width="4"/><text x="407" y="231" class="map-label">SW</text><line x1="420" y1="225" x2="340" y2="160" class="line line-green"/><line x1="420" y1="225" x2="510" y2="165" class="line line-green"/><line x1="420" y1="225" x2="330" y2="295" class="line line-green"/><line x1="420" y1="225" x2="520" y2="295" class="line line-green"/><rect x="310" y="140" width="60" height="40" fill="#121225" stroke="#39ff14" stroke-width="3"/><rect x="490" y="145" width="60" height="40" fill="#121225" stroke="#39ff14" stroke-width="3"/><rect x="300" y="285" width="60" height="40" fill="#121225" stroke="#39ff14" stroke-width="3"/><rect x="500" y="285" width="60" height="40" fill="#121225" stroke="#39ff14" stroke-width="3"/><text x="365" y="360" class="map-small">ESTRELLA: nodo central</text>
+ <line x1="620" y1="105" x2="820" y2="105" class="line" marker-end="url(#arrow)" marker-start="url(#arrow)"/><rect x="580" y="80" width="70" height="50" fill="#121225" stroke="#00f5ff" stroke-width="3"/><rect x="790" y="80" width="70" height="50" fill="#121225" stroke="#00f5ff" stroke-width="3"/><text x="645" y="150" class="map-small">PUNTO A PUNTO</text>
+ <text x="40" y="200" class="map-label" fill="#ffe600">Relación funcional</text>
+ <line x1="195" y1="262" x2="285" y2="262" stroke="#ffe600" stroke-width="3" marker-end="url(#arrow)"/><line x1="285" y1="270" x2="195" y2="270" class="line line-dash" stroke="#ffe600" marker-end="url(#arrow)"/>
+ <rect x="58" y="238" width="72" height="48" fill="#121225" stroke="#ffe600" stroke-width="3"/><text x="64" y="268" class="map-small">CLIENTE</text>
+ <rect x="295" y="233" width="88" height="54" fill="#121225" stroke="#ffe600" stroke-width="3"/><text x="302" y="266" class="map-small">SERVIDOR</text>
+ <text x="72" y="308" class="map-small">CLIENTE-SERVIDOR: solicita · responde</text>
+ <line x1="690" y1="255" x2="600" y2="315" class="line" marker-end="url(#arrow)"/><line x1="690" y1="255" x2="780" y2="315" class="line" marker-end="url(#arrow)"/>
+ <rect x="655" y="230" width="80" height="45" fill="#121225" stroke="#ffe600" stroke-width="3"/><text x="665" y="258" class="map-small">MANAGER</text>
+ <rect x="555" y="315" width="85" height="45" fill="#121225" stroke="#00f5ff" stroke-width="3"/><text x="572" y="343" class="map-small">AGENT</text>
+ <rect x="755" y="315" width="85" height="45" fill="#121225" stroke="#00f5ff" stroke-width="3"/><text x="772" y="343" class="map-small">AGENT</text>
+ <text x="600" y="378" class="map-small">MANAGER-AGENT: supervisa</text>
+ <text x="40" y="420" class="map-label" fill="#ffe600">Localización: LAN = edificio · MAN = ciudad · WAN = país / continente</text>
+ </svg></div>`;
+}
+
+let buildState = {nodes:[],links:[],tool:'pc',cableFrom:null,nextId:1};
+
+function startMission(id){currentMission=MISSIONS.find(m=>m.id===id);document.getElementById('puzzle-title').textContent=currentMission.icon+' '+currentMission.title;if(currentMission.type==='match')renderMatch();else if(currentMission.type==='choose')renderChoose();else renderBuild();showScreen('puzzle')}
+
+const CHOOSE_TAGS={physical:'◈ TOPOLOGÍA FÍSICA',functional:'◈ RELACIÓN FUNCIONAL',geo:'◈ ALCANCE GEOGRÁFICO'};
+
+function renderChoose(){
+ const m=currentMission;
+ const tag=CHOOSE_TAGS[m.chooseKind]||'◈ ANÁLISIS';
+ let html=`<div class="scenario"><strong>TRANSMISIÓN:</strong> ${esc(m.scenario)}</div>
+  <span class="choose-tag">${tag}</span>
+  <div class="question">${esc(m.question)}</div>
+  <div class="options">`;
+ m.opts.forEach((o,i)=>html+=`<button type="button" class="option" onclick="answerChoose(${i})">${esc(o)}</button>`);
+ html+=`</div><div id="feedback"></div>`;
+ document.getElementById('puzzle-body').innerHTML=html;
+}
+
+function answerChoose(i){
+ const m=currentMission;const ok=i===m.ans;
+ document.querySelectorAll('.option').forEach((b,idx)=>{
+  b.disabled=true;
+  if(idx===m.ans)b.classList.add('correct');
+  else if(idx===i&&!ok)b.classList.add('wrong');
+ });
+ if(ok)state.score+=m.xp;else applyPenalty();
+ document.getElementById('feedback').innerHTML=`<div class="feedback ${ok?'ok':'err'}"><strong>${ok?'◈ ENLACE CORRECTO':'◈ SEÑAL ERRÓNEA'}:</strong> ${esc(m.exp)}${ok?'':' <br><small>Penalización: -'+SCORE_PENALTY+' puntos (score: '+state.score+')</small>'}</div><button class="btn btn-primary" onclick="finishMission(${ok})">${ok?'Continuar':'Volver al hub'}</button>`;
+}
+function resetBuildState(m){const first=m.palette.find(t=>t!=='cable')||'pc';buildState={nodes:[],links:[],tool:first,cableFrom:null,nextId:1}}
+
+function renderBuild(){
+ const m=currentMission;resetBuildState(m);
+ const tools=m.palette.map(t=>{
+  if(t==='cable')return `<button type="button" class="tool-btn" data-tool="cable" onclick="setBuildTool('cable')">🔌 Cable</button>`;
+  const meta=NODE_META[t];
+  return `<button type="button" class="tool-btn" data-tool="${t}" onclick="setBuildTool('${t}')">${meta.icon} ${meta.label}</button>`;
+ }).join('');
+ document.getElementById('puzzle-body').innerHTML=`
+  <div class="scenario"><strong>CASO:</strong> ${esc(m.scenario)}</div>
+  <p class="build-hint"><strong>OBJETIVO:</strong> ${esc(m.goal)}</p>
+  <div class="build-lab">
+   <div class="build-steps" id="build-steps"></div>
+   <div class="build-toolbar">${tools}
+    <button type="button" class="tool-btn del" data-tool="delete" onclick="setBuildTool('delete')">🗑️ Borrar</button>
+    <button type="button" class="btn btn-secondary btn-small" onclick="clearBuild()">Limpiar</button>
+   </div>
+   <div class="build-canvas-wrap" id="build-wrap">
+    <div class="build-canvas" id="build-canvas"></div>
+    <svg class="build-svg" id="build-svg" aria-hidden="true"></svg>
+   </div>
+   <p class="build-hint" id="build-tip">Clic en el lienzo para colocar. Con <strong>Cable</strong>: clic en dos dispositivos para unirlos.</p>
+   <div id="feedback"></div>
+   <div class="actions"><button class="btn btn-primary" onclick="verifyBuild()">Verificar red</button></div>
+  </div>`;
+ setBuildTool(buildState.tool);bindBuildCanvas();updateBuildSteps();redrawBuild();
+}
+
+function setBuildTool(tool){
+ buildState.tool=tool;buildState.cableFrom=null;
+ document.querySelectorAll('.tool-btn').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));
+ document.querySelectorAll('.net-node').forEach(n=>n.classList.remove('selected'));
+ const tip=document.getElementById('build-tip');
+ if(!tip)return;
+ if(tool==='cable')tip.innerHTML='Modo cable: hacé clic en el <strong>primer</strong> dispositivo y después en el <strong>segundo</strong>.';
+ else if(tool==='delete')tip.innerHTML='Clic en un dispositivo para eliminarlo.';
+ else tip.innerHTML='Clic en el lienzo para colocar. Con <strong>Cable</strong>: clic en dos dispositivos para unirlos.';
+ redrawBuild();
+}
+
+function bindBuildCanvas(){
+ const wrap=document.getElementById('build-wrap');
+ wrap.onclick=e=>{
+  if(e.target.closest('.net-node'))return;
+  if(buildState.tool==='cable'||buildState.tool==='delete')return;
+  const rect=wrap.getBoundingClientRect();
+  const x=e.clientX-rect.left,y=e.clientY-rect.top;
+  if(!NODE_META[buildState.tool])return;
+  const meta=NODE_META[buildState.tool];
+  buildState.nodes.push({id:buildState.nextId++,type:buildState.tool,x,y,label:meta.label});
+  updateBuildSteps();redrawBuild();
+ };
+}
+
+function clearBuild(){buildState.nodes=[];buildState.links=[];buildState.cableFrom=null;updateBuildSteps();redrawBuild()}
+
+function neighbors(id){return buildState.links.filter(l=>l.from===id||l.to===id).map(l=>l.from===id?l.to:l.from)}
+function degree(id){return neighbors(id).length}
+function hasLink(a,b){return buildState.links.some(l=>(l.from===a&&l.to===b)||(l.from===b&&l.to===a))}
+function countType(t){return buildState.nodes.filter(n=>n.type===t).length}
+function nodesOf(...types){return buildState.nodes.filter(n=>types.includes(n.type))}
+
+function onNodeClick(e,id){
+ e.stopPropagation();
+ if(buildState.tool==='delete'){
+  buildState.links=buildState.links.filter(l=>l.from!==id&&l.to!==id);
+  buildState.nodes=buildState.nodes.filter(n=>n.id!==id);
+  buildState.cableFrom=null;updateBuildSteps();redrawBuild();return;
+ }
+ if(buildState.tool==='cable'){
+  if(buildState.cableFrom===null){buildState.cableFrom=id;redrawBuild();return}
+  if(buildState.cableFrom===id){buildState.cableFrom=null;redrawBuild();return}
+  const a=buildState.cableFrom,b=id;
+  if(!hasLink(a,b))buildState.links.push({from:a,to:b});
+  buildState.cableFrom=null;updateBuildSteps();redrawBuild();
+ }
+}
+
+function redrawBuild(){
+ const canvas=document.getElementById('build-canvas');
+ const svg=document.getElementById('build-svg');
+ if(!canvas||!svg)return;
+ canvas.innerHTML=buildState.nodes.map(n=>{
+  const meta=NODE_META[n.type];
+  const bus=meta.busBar?'<span class="bar"></span>':'';
+  const cloud=meta.cloudShape?'<span class="cloud-bubble">'+meta.icon+'</span>':'';
+  const ico=meta.cloudShape?'':`<div class="ico">${meta.icon}</div>`;
+  return `<div class="net-node ${n.type}" data-id="${n.id}" style="left:${n.x}px;top:${n.y}px" onclick="onNodeClick(event,${n.id})">${ico}${cloud}<div class="lbl">${esc(n.label)}</div>${bus}</div>`;
+ }).join('');
+ const lines=buildState.links.map(l=>{
+  const a=buildState.nodes.find(n=>n.id===l.from),b=buildState.nodes.find(n=>n.id===l.to);
+  if(!a||!b)return '';
+  const stroke=currentMission?.topology==='wan'?'#ff6b9d':currentMission?.topology==='man'?'#39ff14':'#00f5ff';
+  return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${stroke}" stroke-width="4"/>`;
+ }).join('');
+ let pending='';
+ if(buildState.cableFrom!==null){
+  const a=buildState.nodes.find(n=>n.id===buildState.cableFrom);
+  if(a)pending=`<line class="pending" x1="${a.x}" y1="${a.y}" x2="${a.x}" y2="${a.y}"/>`;
+ }
+ svg.innerHTML=lines+pending;
+ document.querySelectorAll('.tool-btn').forEach(b=>b.classList.toggle('active',b.dataset.tool===buildState.tool));
+ if(buildState.cableFrom!==null)document.querySelector(`.net-node[data-id="${buildState.cableFrom}"]`)?.classList.add('selected');
+}
+
+function updateBuildSteps(){
+ const el=document.getElementById('build-steps');if(!el)return;
+ const m=currentMission;el.innerHTML='';
+ const checks={
+  bus:[['Canal Bus',()=>countType('bus')>=1],['3+ PCs',()=>countType('pc')>=3],['Cables al bus',()=>{const buses=nodesOf('bus');const pcs=nodesOf('pc');return buses.length&&pcs.length>=3&&pcs.every(p=>buses.some(b=>hasLink(p.id,b.id)))}]],
+  ring:[['3+ PCs',()=>countType('pc')>=3],['Anillo cerrado',()=>validateRing().ok]],
+  star:[['1 Switch',()=>countType('switch')===1],['3+ PCs',()=>countType('pc')>=3],['Solo al switch',()=>validateStar().partial]],
+  ptp:[['2 dispositivos',()=>buildState.nodes.length===2],['1 cable',()=>buildState.links.length===1]],
+  cs:[['Servidor',()=>countType('server')>=1],['Cliente PC',()=>countType('pc')>=1],['Conexión',()=>validateCS().partial]],
+  p2p:[['2 PCs',()=>countType('pc')===2&&buildState.nodes.length===2],['Cable directo',()=>buildState.links.length===1&&!countType('switch')&&!countType('server')]],
+  ma:[['1 Manager',()=>countType('manager')===1],['2+ PCs',()=>countType('pc')>=2],['Agentes cableados',()=>validateMA().partial]],
+  lan:[['Switch + 3 PCs',()=>countType('switch')>=1&&countType('pc')>=3],['Topología LAN',()=>validateStar().partial]],
+  man:[['3 switches (sedes)',()=>countType('switch')>=3],['Sin router/nube',()=>!countType('router')&&!countType('cloud')],['Fibra entre switches',()=>validateMAN().hasBackbone]],
+  wan:[['Nube Internet',()=>countType('cloud')===1],['3 routers + switches',()=>countType('router')>=3&&countType('switch')>=3],['Routers a Internet',()=>validateWAN().hasCloudLink]]
+ };
+ (checks[m.topology]||[]).forEach(([label,fn])=>{
+  const done=fn();
+  el.innerHTML+=`<span class="step-pill ${done?'done':''}">${done?'✓':'○'} ${label}</span>`;
+ });
+}
+
+function validateRing(){
+ const pcs=nodesOf('pc');
+ if(pcs.length<3)return{ok:false,msg:'Necesitás al menos 3 PCs.'};
+ if(buildState.nodes.some(n=>n.type!=='pc'))return{ok:false,msg:'En anillo usá solo PCs conectadas entre sí.'};
+ if(!pcs.every(p=>degree(p.id)===2))return{ok:false,msg:'Cada PC del anillo debe tener exactamente 2 cables.'};
+ const adj=new Map(pcs.map(p=>[p.id,neighbors(p.id)]));
+ let prev=null,cur=pcs[0].id,steps=0;
+ while(steps<=pcs.length){
+  const nbs=adj.get(cur).filter(x=>x!==prev);
+  if(steps===pcs.length){if(cur===pcs[0].id)return{ok:true};break}
+  if(nbs.length!==1&&steps>0)return{ok:false,msg:'El recorrido del anillo no es válido.'};
+  prev=cur;cur=nbs[0];steps++;
+ }
+ return{ok:false,msg:'Las PCs deben formar un circuito cerrado (anillo).'};
+}
+
+function validateStar(){
+ const sw=nodesOf('switch'),pcs=nodesOf('pc');
+ if(sw.length!==1)return{ok:false,partial:false,msg:'Usá exactamente 1 Switch como nodo central.'};
+ if(pcs.length<3)return{ok:false,partial:false,msg:'Conectá al menos 3 PCs al switch.'};
+ const sid=sw[0].id;
+ const pcOk=pcs.every(p=>degree(p.id)===1&&hasLink(p.id,sid));
+ const swOnly=neighbors(sid).every(nid=>buildState.nodes.find(n=>n.id===nid)?.type==='pc');
+ const partial=pcOk&&swOnly;
+ return{ok:partial&&degree(sid)===pcs.length,partial,msg:partial?'':'Cada PC debe conectarse solo al switch, sin enlaces entre PCs.'};
+}
+
+function validateCS(){
+ const srv=nodesOf('server'),pcs=nodesOf('pc');
+ if(!srv.length)return{ok:false,partial:false,msg:'Agregá un Servidor.'};
+ if(!pcs.length)return{ok:false,partial:false,msg:'Agregá al menos una PC cliente.'};
+ const connected=pcs.some(p=>{
+  const visit=new Set(),q=[p.id];
+  while(q.length){
+   const cur=q.shift();if(cur===srv[0].id)return true;
+   if(visit.has(cur))continue;visit.add(cur);
+   neighbors(cur).forEach(n=>{if(!visit.has(n))q.push(n)});
+  }
+  return false;
+ });
+ return{ok:connected,partial:connected,msg:connected?'':'El cliente debe tener camino de cable hasta el servidor.'};
+}
+
+function validateMA(){
+ const mgr=nodesOf('manager'),agents=nodesOf('pc');
+ if(mgr.length!==1)return{ok:false,partial:false,msg:'Colocá un solo Manager.'};
+ if(agents.length<2)return{ok:false,partial:false,msg:'Conectá al menos 2 PCs agentes.'};
+ const mid=mgr[0].id;
+ const partial=agents.every(a=>hasLink(a.id,mid));
+ return{ok:partial,partial,msg:partial?'':'Cada PC agente debe tener cable al Manager.'};
+}
+
+function countSwitchLinks(){
+ return buildState.links.filter(l=>{
+  const a=buildState.nodes.find(n=>n.id===l.from),b=buildState.nodes.find(n=>n.id===l.to);
+  return a?.type==='switch'&&b?.type==='switch';
+ }).length;
+}
+
+function isConnectedGroup(nodeIds){
+ if(!nodeIds.length)return false;
+ const set=new Set(nodeIds),vis=new Set(),q=[nodeIds[0]];
+ while(q.length){
+  const cur=q.shift();if(vis.has(cur))continue;vis.add(cur);
+  neighbors(cur).forEach(n=>{if(set.has(n)&&!vis.has(n))q.push(n)});
+ }
+ return vis.size===nodeIds.length;
+}
+
+function hasPathFrom(startId, pred){
+ const visit=new Set(),q=[startId];
+ while(q.length){
+  const cur=q.shift();if(visit.has(cur))continue;visit.add(cur);
+  if(pred(cur))return true;
+  neighbors(cur).forEach(n=>{if(!visit.has(n))q.push(n)});
+ }
+ return false;
+}
+
+function validateMAN(){
+ const sw=nodesOf('switch');
+ const routers=countType('router'),clouds=countType('cloud');
+ if(routers||clouds)return{ok:false,partial:false,hasPc:false,hasBackbone:false,msg:'MAN: no uses Router ni Nube Internet. Solo switches y fibra metropolitana.'};
+ const hasMin=sw.length>=3;
+ const hasPc=hasMin&&sw.every(s=>neighbors(s.id).some(nid=>buildState.nodes.find(n=>n.id===nid)?.type==='pc'));
+ const swIds=sw.map(s=>s.id);
+ const connected=hasMin&&isConnectedGroup(swIds);
+ const swLinks=countSwitchLinks();
+ const needLinks=Math.max(0,sw.length-1);
+ const hasBackbone=connected&&swLinks>=needLinks;
+ let msg='';
+ if(!hasMin)msg='Colocá al menos 3 Switches (sedes en la ciudad).';
+ else if(!hasPc)msg='Cada sede necesita al menos 1 PC cableada a su switch.';
+ else if(!connected)msg='Todas las sedes deben formar una red conectada por fibra.';
+ else if(!hasBackbone)msg=`Cableá los switches entre sí: necesitás al menos ${needLinks} enlace(s) switch↔switch (tenés ${swLinks}).`;
+ const ok=hasBackbone;
+ return{ok,partial:hasPc&&hasMin,hasPc,hasBackbone,msg:ok?'':msg};
+}
+
+function validateWAN(){
+ const clouds=nodesOf('cloud'),routers=nodesOf('router'),sw=nodesOf('switch');
+ if(clouds.length!==1)return{ok:false,partial:false,hasCloud:false,hasSites:false,hasCloudLink:false,msg:'WAN: colocá exactamente 1 Nube Internet.'};
+ if(routers.length<3)return{ok:false,partial:false,hasCloud:true,hasSites:false,hasCloudLink:false,msg:'WAN: necesitás al menos 3 Routers (una sede por router).'};
+ if(sw.length<3)return{ok:false,partial:false,hasCloud:true,hasSites:false,hasCloudLink:false,msg:'WAN: colocá al menos 3 Switches con PC en cada sede.'};
+ const hasPc=sw.every(s=>neighbors(s.id).some(nid=>buildState.nodes.find(n=>n.id===nid)?.type==='pc'));
+ const cloudId=clouds[0].id;
+ const hasCloudLink=routers.some(r=>hasLink(r.id,cloudId));
+ const siteOk=sw.every(s=>{
+  const hasRouter=hasPathFrom(s.id,id=>buildState.nodes.find(n=>n.id===id)?.type==='router');
+  const reachesCloud=hasPathFrom(s.id,id=>id===cloudId);
+  return hasRouter&&reachesCloud;
+ });
+ let msg='';
+ if(!hasPc)msg='Cada sede necesita PC→Switch.';
+ else if(!siteOk)msg='En cada sede: PC cableada al Switch, Switch al Router y ruta hasta la Nube.';
+ else if(!hasCloudLink)msg='Cableá al menos un Router a la Nube Internet.';
+ const ok=hasPc&&siteOk&&hasCloudLink;
+ return{ok,partial:hasPc&&sw.length>=3,hasCloud:clouds.length===1,hasSites:hasPc,hasCloudLink,msg:ok?'':msg};
+}
+
+function verifyBuild(){
+ const m=currentMission;let res;
+ switch(m.topology){
+  case 'bus':{
+   const buses=nodesOf('bus'),pcs=nodesOf('pc');
+   if(!buses.length){res={ok:false,msg:'Falta el canal Bus.'};break}
+   if(pcs.length<3){res={ok:false,msg:'Conectá al menos 3 PCs al bus.'};break}
+   const ok=pcs.every(p=>buses.some(b=>hasLink(p.id,b.id)))&&!pcs.some(p=>neighbors(p.id).some(nid=>buildState.nodes.find(n=>n.id===nid)?.type==='pc'));
+   res={ok,msg:ok?m.exp:'Todas las PCs deben cablearse al Bus, sin enlaces PC-PC.'};
+   break;
+  }
+  case 'ring':res=validateRing();res.msg=res.ok?m.exp:res.msg;break;
+  case 'star':case 'lan':{const v=validateStar();res={ok:v.ok,msg:v.ok?m.exp:v.msg};break}
+  case 'ptp':{
+   const ok=buildState.nodes.length===2&&buildState.links.length===1;
+   res={ok,msg:ok?m.exp:'Debe haber exactamente 2 dispositivos y un solo cable entre ellos.'};
+   break;
+  }
+  case 'cs':{const v=validateCS();res={ok:v.ok,msg:v.ok?m.exp:v.msg};break}
+  case 'p2p':{
+   const ok=countType('pc')===2&&buildState.nodes.length===2&&buildState.links.length===1&&!countType('switch');
+   res={ok,msg:ok?m.exp:'Usá solo 2 PCs unidas por un cable, sin switch.'};
+   break;
+  }
+  case 'ma':{const v=validateMA();res={ok:v.ok,msg:v.ok?m.exp:v.msg};break}
+  case 'man':{const v=validateMAN();res={ok:v.ok,msg:v.ok?m.exp:v.msg};break}
+  case 'wan':{const v=validateWAN();res={ok:v.ok,msg:v.ok?m.exp:v.msg};break}
+  default:res={ok:false,msg:'Topología no reconocida.'};
+ }
+ if(res.ok)state.score+=m.xp;else applyPenalty();
+ document.getElementById('feedback').innerHTML=`<div class="feedback ${res.ok?'ok':'err'}"><strong>${res.ok?'RED OK':'REVISÁ LA RED'}:</strong> ${esc(res.msg)}${res.ok?'':' <br><small>Penalización: -'+SCORE_PENALTY+' puntos (score: '+state.score+')</small>'}</div><button class="btn btn-primary" onclick="finishMission(${res.ok})">${res.ok?'Continuar':'Reintentar'}</button>`;
+ updateBuildSteps();
+}
+
+function finishMission(ok){if(ok&&!state.done.includes(currentMission.id))state.done.push(currentMission.id);if(!ok)toast('Revisá la topología e intentá de nuevo');if(state.done.length===MISSIONS.length){state.end=Date.now();renderVictory();showScreen('victory');clearInterval(timerInt);return}showScreen('hub');renderAll();switchTab('missions')}
+
+const matchItems = [
+ {concept:'Bus', group:'Topología Física'}, {concept:'Estrella', group:'Topología Física'}, {concept:'Punto a Punto', group:'Topología Física'},
+ {concept:'Cliente-Servidor', group:'Relación Funcional'}, {concept:'Peer to Peer', group:'Relación Funcional'}, {concept:'Manager-Agent', group:'Relación Funcional'},
+ {concept:'LAN', group:'Localización Geográfica'}, {concept:'MAN', group:'Localización Geográfica'}, {concept:'WAN', group:'Localización Geográfica'}
+];
+let drops={};
+function renderMatch(){drops={};let shuffled=[...matchItems].sort(()=>Math.random()-.5);document.getElementById('puzzle-body').innerHTML=`<div class="scenario"><strong>RETO FINAL:</strong> Arrastrá cada concepto a su categoría correcta.</div><div class="drag-area"><div class="drag-list" id="drag-list"><h3 class="section-title">Conceptos</h3>${shuffled.map((it,idx)=>`<div class="drag-card" draggable="true" id="drag-${idx}" data-concept="${esc(it.concept)}" data-group="${esc(it.group)}">${esc(it.concept)}</div>`).join('')}</div><div class="drop-list"><h3 class="section-title">Categorías</h3>${['Topología Física','Relación Funcional','Localización Geográfica'].map(g=>`<div class="drop-zone" data-group="${g}"><strong>${g}</strong><div class="drop-content"></div></div>`).join('')}</div></div><div id="feedback"></div><div class="actions"><button class="btn btn-primary" onclick="checkMatch()">Verificar</button></div>`;setupDnD()}
+function setupDnD(){document.querySelectorAll('.drag-card').forEach(card=>{card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',card.id)})});document.querySelectorAll('.drop-zone').forEach(zone=>{zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('hover')});zone.addEventListener('dragleave',()=>zone.classList.remove('hover'));zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('hover');const id=e.dataTransfer.getData('text/plain');const card=document.getElementById(id);if(card){zone.querySelector('.drop-content').appendChild(card)}})})}
+function checkMatch(){let ok=true;document.querySelectorAll('.drop-zone').forEach(z=>{z.classList.remove('good','bad');const group=z.dataset.group;const cards=[...z.querySelectorAll('.drag-card')];const zoneOk=cards.length>0 && cards.every(c=>c.dataset.group===group);if(!zoneOk)ok=false;z.classList.add(zoneOk?'good':'bad')});if(ok){state.score+=currentMission.xp;if(!state.done.includes(currentMission.id))state.done.push(currentMission.id);document.getElementById('feedback').innerHTML=`<div class="feedback ok"><strong>PERFECTO:</strong> ${esc(currentMission.exp)}</div><button class="btn btn-primary" onclick="finishMission(true)">Finalizar</button>`}else{applyPenalty();document.getElementById('feedback').innerHTML='<div class="feedback err"><strong>Revisá:</strong> Algún concepto está en una categoría incorrecta o falta completar una categoría.<br><small>Penalización: -'+SCORE_PENALTY+' puntos (score: '+state.score+')</small></div>'}}
+
+function renderVictory(){let html=`<div class="victory-icon">🏆</div><h2>¡RED COMPLETA!</h2><p class="lead"><strong>${esc(state.name)}</strong>, completaste las misiones armando redes con PCs, nodos y cables.</p><div class="stats"><div class="stat"><span>TIEMPO</span><strong>${fmt(elapsed())}</strong></div><div class="stat"><span>SCORE</span><strong>${state.score}</strong></div><div class="stat"><span>STAGES</span><strong>${state.done.length}/${MISSIONS.length}</strong></div></div><p class="brand">${BRAND}</p><div class="actions"><button class="btn btn-primary" onclick="downloadCertificate()">Descargar certificado</button><button class="btn btn-secondary" onclick="showScreen('hub');renderAll()">Volver al Hub</button></div>`;document.getElementById('victory-content').innerHTML=html;updateHUD()}
+async function downloadCertificate(){const c=document.getElementById('cert'),ctx=c.getContext('2d'),W=c.width,H=c.height;ctx.fillStyle='#080812';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#ff00aa';ctx.lineWidth=10;ctx.strokeRect(28,28,W-56,H-56);ctx.strokeStyle='#00f5ff';ctx.lineWidth=4;ctx.strokeRect(48,48,W-96,H-96);ctx.textAlign='center';ctx.fillStyle='#00f5ff';ctx.font='bold 42px Consolas';ctx.fillText('NET TOPOLOGY ARCADE',W/2,120);ctx.fillStyle='#ffe600';ctx.font='bold 28px Consolas';ctx.fillText('CERTIFICADO DE MISIÓN COMPLETA',W/2,170);ctx.fillStyle='#39ff14';ctx.font='bold 54px Consolas';ctx.fillText(state.name.toUpperCase(),W/2,270);ctx.fillStyle='#ececff';ctx.font='30px Consolas';ctx.fillText('Clasificación de redes: Topología Física, Relación Funcional y Localización Geográfica',W/2,340);ctx.fillStyle='#ffe600';ctx.font='bold 34px Consolas';ctx.fillText('Tiempo: '+fmt(elapsed())+'   Score: '+state.score,W/2,420);ctx.fillStyle='#8b8bab';ctx.font='24px Consolas';ctx.fillText(new Date(state.end||Date.now()).toLocaleDateString('es-AR'),W/2,490);ctx.fillStyle='#00f5ff';ctx.font='22px Consolas';ctx.fillText(BRAND,W/2,650);const a=document.createElement('a');a.download='certificado_net_topology_'+state.name.replace(/[^a-z0-9]/gi,'_')+'.png';a.href=c.toDataURL('image/png');a.click();toast('Certificado descargado')}
+
+document.getElementById('player').addEventListener('keydown',e=>{if(e.key==='Enter')startGame()});
+</script>
+</body>
+</html>
